@@ -1,0 +1,10 @@
+/classes/
+/test-classes/
+.classpath
+.project
+.settings/
+.gradle
+gradle/
+.idea
+/build
+out/
