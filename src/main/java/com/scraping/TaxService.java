@@ -701,7 +701,7 @@ public class TaxService{
      * @return
      * @throws Exception
      */
-    public String urlHometaxSchTaxBill(Map pWqInfo,int pPageNum) throws Exception {
+    public String urlHometaxSchTaxBill(Map pWqInfo, int pPageNum, String schType) throws Exception {
 
         Date today = new Date();
         Locale currentLocale = new Locale("KOREAN", "KOREA");
@@ -711,6 +711,10 @@ public class TaxService{
         String schStDt = formatter.format(DateUtils.addDays(today,-30));//현재일자 - 30
         String schEndDt = formatter.format(today);//현재일자
         String prhSlsClCd = "02";//구분 01: 매출, 02: 매입
+        String etxivClCd = "01";//분류 01: 전자세금계산서, 03: 전자계산서
+
+        if(schType.equals("UTEETBDA09"))
+            etxivClCd = "03";
 
         int pageSize = 50;
 
@@ -757,7 +761,7 @@ public class TaxService{
                 "                       <splrMpbNo></splrMpbNo>" +
                 "                       <dmnrMpbNo></dmnrMpbNo>" +
                 "                       <cstnBmanMpbNo></cstnBmanMpbNo>" +
-                "                       <etxivClCd>01</etxivClCd>" +
+                "                       <etxivClCd>" + etxivClCd + "</etxivClCd>" +
                 "                       <etxivKndCd>all</etxivKndCd>" +
                 "                       <inqrDtStrt>" + schStDt + "</inqrDtStrt>" +
                 "                       <inqrDtEnd>" + schEndDt + "</inqrDtEnd>" +
@@ -766,7 +770,7 @@ public class TaxService{
 
         try {
 
-            String urlStr = "https://teet.hometax.go.kr/wqAction.do?actionId=ATEETBDA001R01&screenId=UTEETBDA01&popupYn=false&realScreenId=\n";
+            String urlStr = "https://teet.hometax.go.kr/wqAction.do?actionId=ATEETBDA001R01&screenId=" + schType + "&popupYn=false&realScreenId=\n";
 
             URL url = new URL(urlStr);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -821,7 +825,7 @@ public class TaxService{
 
                 if(pageCnt > 1){
                     for(int j = pageCnt ;  1 < j; j--)
-                        taxList += urlHometaxSchTaxBill(pWqInfo, j);
+                        taxList += urlHometaxSchTaxBill(pWqInfo, j, schType);
                 }
             }
         } catch (Exception e) {
